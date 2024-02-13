@@ -1,0 +1,76 @@
+import requests
+from bs4 import BeautifulSoup
+import requests
+import re
+import json
+
+
+############### O CÓDIGO NÃO ESTÁ FUNCIONANDO POR COMPLETO. NÃO CONSIGO PEGAR APENAS OS NOMES DOS POKEMONS E DAS FAMILIAS, NO CASO DOS NOMES
+############### OS POKEOMONS ESTÃO VINDO COM COISAS ALEATÓRIAS COMO XD E LA, SV...
+
+
+headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 \
+    (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36'}
+
+url_page = 'https://bulbapedia.bulbagarden.net/wiki/List_of_Pokémon_by_evolution_family'
+
+
+lista = []
+
+site = requests.get(url_page, headers = headers)
+soup = BeautifulSoup(site.content,'html.parser')
+
+############### Buscando as informações das tabelas de evolução por família ################
+
+tables = soup.find_all('table', {'class': 'roundy'})
+def busca_dados()->None:
+    teste = 0
+    for table in tables:
+        #family_list = table.find_all('th', text=re.compile('family'))
+        ##pokemon_name = table.find_all('a')
+        #pokemon_name = table.find_all('a', {'title': re.compile('Pokémon', re.IGNORECASE)})
+
+        #for name in pokemon_name:
+        #    pokemon = name.find('span')
+        #    if pokemon:
+        #        pokemon.unwrap()
+        #        print(name.get_text())
+
+        #for row in family_list:
+        #    pokemon_family_name = row.text
+            ##print(pokemon_family_name)
+
+        #line_teste = table.find_all('th', {'colspan': re.compile('8')})
+        #for title in line_teste:
+        #    family = title.text
+        #    pokemon_name = table.find_all('a', {'title': re.compile('Pokémon', re.IGNORECASE)})
+        #    
+        #    for name in pokemon_name:
+        #        pokemon = name.find('span')
+        #        if pokemon:
+        #            pokemon.unwrap()
+        #            print(name.get_text)
+
+        clear_list = ['LA', 'SV', 'Unown', 'XD', 'SwSh']
+
+        lines = table.find_all('tr')
+        for line in lines:
+            family = line.find('th',{'colspan' :re.compile('8')})
+            
+            #if family:
+                #if family.text != 'Unown':
+                    #print(family.text)
+            
+            evoluition_names = line.find_all('a', {'title': re.compile('Pokémon', re.IGNORECASE)})
+            for pokemon_name in evoluition_names:
+                pokemon = pokemon_name.find('span')
+                if pokemon:
+                    pokemon.unwrap()
+                    if not len(pokemon_name.text) == 1 and pokemon_name.text != 'Unown' and pokemon_name.text not in clear_list:
+                        print(pokemon_name.text)
+
+#def busca_linha_evolutiva():
+#    pokemon_names_list = table.find_all('a', text=re.compile('\(Pokémon\)'))
+
+
+busca_dados()
