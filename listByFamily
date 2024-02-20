@@ -7,7 +7,7 @@ import json
 
 ############### O CÓDIGO NÃO ESTÁ FUNCIONANDO POR COMPLETO. NÃO CONSIGO PEGAR APENAS OS NOMES DOS POKEMONS E DAS FAMILIAS, NO CASO DOS NOMES
 ############### OS POKEOMONS ESTÃO VINDO COM COISAS ALEATÓRIAS COMO XD E LA, SV...
-
+############### ESSA CARALHA DE PÁGINA NÃO FAZ SENTIDO, DEPOIS TENTO RESOLVER ELA EM PARTES
 
 headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 \
     (KHTML, like Gecko) Chrome/106.0.0.0 Safari/537.36'}
@@ -54,21 +54,39 @@ def busca_dados()->None:
         clear_list = ['LA', 'SV', 'Unown', 'XD', 'SwSh']
 
         lines = table.find_all('tr')
+        passagem = 1
+        familia = ""
         for line in lines:
-            family = line.find('th',{'colspan' :re.compile('8')})
-            
-            #if family:
-                #if family.text != 'Unown':
-                    #print(family.text)
-            
-            evoluition_names = line.find_all('a', {'title': re.compile('Pokémon', re.IGNORECASE)})
-            for pokemon_name in evoluition_names:
-                pokemon = pokemon_name.find('span')
-                if pokemon:
-                    pokemon.unwrap()
-                    if not len(pokemon_name.text) == 1 and pokemon_name.text != 'Unown' and pokemon_name.text not in clear_list:
-                        print(pokemon_name.text)
+            nomes = ""
 
+            if passagem == 1:
+                family = line.find('th',{'colspan' :re.compile('8')})
+                if family:
+                    if family.text != 'Unown':
+                        familia = family.text
+            
+            if passagem == 2:
+                evoluition_names = line.find_all('a', {'title': re.compile('Pokémon', re.IGNORECASE)})
+                for pokemon_name in evoluition_names:
+                    pokemon = pokemon_name.find('span')
+                    if pokemon:
+                        pokemon.unwrap()
+                        if not len(pokemon_name.text) == 1 and pokemon_name.text != 'Unown' and pokemon_name.text not in clear_list:
+                            if nomes == "":
+                                nomes += pokemon_name.text
+                            else:
+                                nomes += f', {pokemon_name.text}'
+                
+                if familia == "":
+                    print(nomes)
+                else:   
+                    print(f'\n{familia}{nomes}')
+                familia = ""
+                passagem = 0
+            
+            passagem += 1
+
+            
 #def busca_linha_evolutiva():
 #    pokemon_names_list = table.find_all('a', text=re.compile('\(Pokémon\)'))
 
